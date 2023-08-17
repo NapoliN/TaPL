@@ -16,9 +16,7 @@ let parseArgs () =
          Some(_) -> err "You must specify exactly one input file"
        | None -> inFile := Some(s))
      "";
-  match !inFile with
-      None -> err "You must specify an input file"
-    | Some(s) -> s
+  !inFile
 
 let openfile infile = 
   let rec trynext l = match l with
@@ -37,6 +35,9 @@ let parseFile inFile =
     with Parsing.Parse_error -> err "Parse Error"
   in Parsing.clear_parser(); close_in pi; result
 
+let process_command cmd = match cmd with
+  | Eval(t) -> 
+    let t' = eval t in Syntax.printtm t'
 
 let rec process_file f =
   let cmd = parseFile f in
@@ -45,13 +46,24 @@ let rec process_file f =
     let result = process_command c in
     result
   in g cmd; print_newline()
-and process_command cmd = match cmd with
-  | Eval(t) -> 
-    let t' = eval t in Syntax.printtm t'
+
+let parse_line lexbuf = 
+  let result = try Parser.toplevel Lexer.main lexbuf
+  with Parsing.Parse_error -> err "Parse Error"
+  in Parsing.clear_parser(); result
+
+let process_interpret () =
+  let lexbuf = Lexer.create stdin in
+  let rec process_line () = 
+    let cmd = parse_line lexbuf in
+    print_string "> "; process_command cmd; print_newline(); process_line()
+  in process_line ()
 
 let main () =
   let inFile = parseArgs() in
-  let _ = process_file inFile in ()
+  match inFile with
+    None -> process_interpret()
+  | Some(inFile') ->  process_file inFile'
 
 let res = 
   Printexc.print (fun unit -> main();0) ()
