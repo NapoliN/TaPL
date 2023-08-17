@@ -4,3 +4,6 @@
 *.cmi
 *.cmo
 f
+lexer.ml
+parser.mli
+parser.ml
