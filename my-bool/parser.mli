@@ -6,7 +6,8 @@ type token =
   | FALSE
   | LPAREN
   | RPAREN
+  | SEMI
   | EOF
 
 val toplevel :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf ->  Syntax.command 
+  (Lexing.lexbuf  -> token) -> Lexing.lexbuf ->  Syntax.command list

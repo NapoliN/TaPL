@@ -12,6 +12,7 @@ let reservedWords = [
     
     ("(", fun unit -> Parser.LPAREN);
     (")", fun unit -> Parser.RPAREN);
+    (";", fun unit -> Parser.SEMI)
 ]
 
 (*Support functions*)
@@ -40,6 +41,6 @@ rule main = parse
     | ['a'-'z']+
         { createID (text lexbuf) } (* reserved keyword *)
 
-    | ['(' ')']
+    | ['(' ')' ';']
         { createID (text lexbuf) } (* *)
     

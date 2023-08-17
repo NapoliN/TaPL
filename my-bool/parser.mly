@@ -11,14 +11,18 @@
 
 %token LPAREN
 %token RPAREN
+%token SEMI
 
 %token EOF
 
 %start toplevel
-%type < Syntax.command > toplevel
+%type < Syntax.command list> toplevel
 %%
 
-toplevel : Command EOF { $1 }
+toplevel : 
+    EOF {[]}
+    | Command SEMI toplevel
+        { $1 :: $3}
 
 Command :
     Term    { (Eval($1))}

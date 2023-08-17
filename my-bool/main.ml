@@ -40,12 +40,12 @@ let process_command cmd = match cmd with
     let t' = eval t in Syntax.printtm t'
 
 let rec process_file f =
-  let cmd = parseFile f in
+  let cmds = parseFile f in
   let g c =
     open_hvbox 0;
     let result = process_command c in
     result
-  in g cmd; print_newline()
+  in List.iter g cmds; print_newline()
 
 let parse_line lexbuf = 
   let result = try Parser.toplevel Lexer.main lexbuf
@@ -55,8 +55,13 @@ let parse_line lexbuf =
 let process_interpret () =
   let lexbuf = Lexer.create stdin in
   let rec process_line () = 
-    let cmd = parse_line lexbuf in
-    print_string "> "; process_command cmd; print_newline(); process_line()
+    let cmds = parse_line lexbuf in
+    let g cmd = 
+      print_string "> ";
+      process_command cmd;
+      print_newline()
+    in List.iter g cmds;
+      process_line()
   in process_line ()
 
 let main () =
