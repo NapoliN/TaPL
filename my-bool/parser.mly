@@ -32,5 +32,5 @@ AppTerm :
 
 ATerm :
     LPAREN Term RPAREN  { $2 }
-    | TRUE              { TmTrue() }
-    | FALSE             { TmFalse() }
+    | TRUE              { TmTrue }
+    | FALSE             { TmFalse }

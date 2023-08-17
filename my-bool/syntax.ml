@@ -1,8 +1,8 @@
 open Format
 
 type term = 
-        TmTrue of unit
-    |   TmFalse of unit
+        TmTrue
+    |   TmFalse
     |   TmIf of term * term * term
 
 type command = 
@@ -30,8 +30,8 @@ let rec printtm_Term outer t =
 and printtm_AppTerm outer t = match t with
   t -> printtm_ATerm outer t
 and printtm_ATerm outer t = match t with
-    TmTrue(_) -> print_string "true"
-  | TmFalse(_) -> print_string "false"
+    TmTrue -> print_string "true"
+  | TmFalse -> print_string "false"
   | t -> 
     print_string "(";
     printtm_Term outer t;

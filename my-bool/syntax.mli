@@ -1,6 +1,6 @@
 type term = 
-        TmTrue of unit
-    |   TmFalse of unit
+        TmTrue
+    |   TmFalse
     |   TmIf of term * term * term
 
 type command = 

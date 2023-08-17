@@ -128,13 +128,13 @@ let yyact = [|
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 35 "parser.mly"
-                        ( TmTrue() )
+                        ( TmTrue )
 # 133 "parser.ml"
                : 'ATerm))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 36 "parser.mly"
-                        ( TmFalse() )
+                        ( TmFalse )
 # 139 "parser.ml"
                : 'ATerm))
 (* Entry toplevel *)
