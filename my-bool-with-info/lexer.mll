@@ -1,6 +1,12 @@
 (* Header *)
 {
+open Support.Error
 exception LexError
+
+let lineno   = ref 1
+and start    = ref 0
+
+and filename = ref ""
 
 (*reserved word*)
 let reservedWords = [
@@ -15,6 +21,9 @@ let reservedWords = [
     (";", fun unit -> Parser.SEMI)
 ]
 
+let info lexbuf =
+  createInfo (!filename) (!lineno) (Lexing.lexeme_start lexbuf - !start)
+
 (*Support functions*)
 type buildfun = unit -> Parser.token
 let (symbolTable : (string, buildfun) Hashtbl.t) = Hashtbl.create 1024
@@ -27,15 +36,22 @@ let createID str =
         ) ()
     with Not_found -> raise LexError
 
-let create stream = 
+(* renaming *)
+let create inFile stream = 
+    if not (Filename.is_implicit inFile) then filename := inFile
+            else filename := Filename.concat (Sys.getcwd()) inFile;
     Lexing.from_channel stream
 
+let create_nofile stream = 
+    filename := "INTP"; Lexing.from_channel stream
+
 let text = Lexing.lexeme
+let lexerr = print_err_info
 }
 
 rule main = parse
       [' ' '\t']+
-        {main lexbuf}    (* skip space *)
+        { main lexbuf }    (* skip space *)
     | [ '\n'] | eof
         { Parser.EOF }
     | ['a'-'z']+
@@ -43,4 +59,5 @@ rule main = parse
 
     | ['(' ')' ';']
         { createID (text lexbuf) } (* *)
+    | _ { lexerr (info lexbuf) "invalid character" }
     

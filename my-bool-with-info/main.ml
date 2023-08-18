@@ -29,7 +29,7 @@ let openfile infile =
 
 let parseFile inFile =
   let pi = openfile inFile
-  in let lexbuf = Lexer.create pi
+  in let lexbuf = Lexer.create inFile pi
   in let result =
     try Parser.toplevel Lexer.main lexbuf
     with Parsing.Parse_error -> err "Parse Error"
@@ -49,11 +49,12 @@ let rec process_file f =
 
 let parse_line lexbuf = 
   let result = try Parser.toplevel Lexer.main lexbuf
-  with Parsing.Parse_error -> err "Parse Error"
+  with Parsing.Parse_error -> print_err_info (Lexer.info lexbuf) "Parse Error"
+    |  Support.Error.Exit(v) -> exit v 
   in Parsing.clear_parser(); result
 
 let process_interpret () =
-  let lexbuf = Lexer.create stdin in
+  let lexbuf = Lexer.create_nofile stdin in
   let rec process_line () = 
     let cmds = parse_line lexbuf in
     let g cmd = 
@@ -71,6 +72,8 @@ let main () =
   | Some(inFile') ->  process_file inFile'
 
 let res = 
-  Printexc.print (fun unit -> main();0) ()
-
+  Printexc.print (fun () ->
+    try main();0
+    with Exit x -> x 
+  )()
 let () = exit res
