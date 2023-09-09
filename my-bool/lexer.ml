@@ -1,4 +1,4 @@
-# 2 "lexer.mll"
+# 1 "lexer.mll"
  
 exception LexError
 
@@ -134,7 +134,7 @@ and __ocaml_lex_main_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
 # 38 "lexer.mll"
-        (main lexbuf)
+        ( main lexbuf )
 # 139 "lexer.ml"
 
   | 1 ->

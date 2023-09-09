@@ -5,16 +5,12 @@
 
    3  Command : Term
 
-   4  Term : AppTerm
-   5       | IF Term THEN Term ELSE Term
+   4  Term : TRUE
+   5       | FALSE
+   6       | IF Term THEN Term ELSE Term
+   7       | LPAREN Term RPAREN
 
-   6  AppTerm : ATerm
-
-   7  ATerm : LPAREN Term RPAREN
-   8        | TRUE
-   9        | FALSE
-
-  10  %entry% : '\001' toplevel
+   8  %entry% : '\001' toplevel
 
 state 0
 	$accept : . %entry% $end  (0)
@@ -26,7 +22,7 @@ state 0
 
 
 state 1
-	%entry% : '\001' . toplevel  (10)
+	%entry% : '\001' . toplevel  (8)
 
 	IF  shift 3
 	TRUE  shift 4
@@ -38,8 +34,6 @@ state 1
 	toplevel  goto 8
 	Command  goto 9
 	Term  goto 10
-	AppTerm  goto 11
-	ATerm  goto 12
 
 
 state 2
@@ -49,7 +43,7 @@ state 2
 
 
 state 3
-	Term : IF . Term THEN Term ELSE Term  (5)
+	Term : IF . Term THEN Term ELSE Term  (6)
 
 	IF  shift 3
 	TRUE  shift 4
@@ -57,25 +51,23 @@ state 3
 	LPAREN  shift 6
 	.  error
 
-	Term  goto 13
-	AppTerm  goto 11
-	ATerm  goto 12
+	Term  goto 11
 
 
 state 4
-	ATerm : TRUE .  (8)
+	Term : TRUE .  (4)
 
-	.  reduce 8
+	.  reduce 4
 
 
 state 5
-	ATerm : FALSE .  (9)
+	Term : FALSE .  (5)
 
-	.  reduce 9
+	.  reduce 5
 
 
 state 6
-	ATerm : LPAREN . Term RPAREN  (7)
+	Term : LPAREN . Term RPAREN  (7)
 
 	IF  shift 3
 	TRUE  shift 4
@@ -83,9 +75,7 @@ state 6
 	LPAREN  shift 6
 	.  error
 
-	Term  goto 14
-	AppTerm  goto 11
-	ATerm  goto 12
+	Term  goto 12
 
 
 state 7
@@ -95,15 +85,15 @@ state 7
 
 
 state 8
-	%entry% : '\001' toplevel .  (10)
+	%entry% : '\001' toplevel .  (8)
 
-	.  reduce 10
+	.  reduce 8
 
 
 state 9
 	toplevel : Command . SEMI toplevel  (2)
 
-	SEMI  shift 15
+	SEMI  shift 13
 	.  error
 
 
@@ -114,32 +104,20 @@ state 10
 
 
 state 11
-	Term : AppTerm .  (4)
+	Term : IF Term . THEN Term ELSE Term  (6)
 
-	.  reduce 4
+	THEN  shift 14
+	.  error
 
 
 state 12
-	AppTerm : ATerm .  (6)
+	Term : LPAREN Term . RPAREN  (7)
 
-	.  reduce 6
+	RPAREN  shift 15
+	.  error
 
 
 state 13
-	Term : IF Term . THEN Term ELSE Term  (5)
-
-	THEN  shift 16
-	.  error
-
-
-state 14
-	ATerm : LPAREN Term . RPAREN  (7)
-
-	RPAREN  shift 17
-	.  error
-
-
-state 15
 	toplevel : Command SEMI . toplevel  (2)
 
 	IF  shift 3
@@ -149,15 +127,44 @@ state 15
 	EOF  shift 7
 	.  error
 
-	toplevel  goto 18
+	toplevel  goto 16
 	Command  goto 9
 	Term  goto 10
-	AppTerm  goto 11
-	ATerm  goto 12
+
+
+state 14
+	Term : IF Term THEN . Term ELSE Term  (6)
+
+	IF  shift 3
+	TRUE  shift 4
+	FALSE  shift 5
+	LPAREN  shift 6
+	.  error
+
+	Term  goto 17
+
+
+state 15
+	Term : LPAREN Term RPAREN .  (7)
+
+	.  reduce 7
 
 
 state 16
-	Term : IF Term THEN . Term ELSE Term  (5)
+	toplevel : Command SEMI toplevel .  (2)
+
+	.  reduce 2
+
+
+state 17
+	Term : IF Term THEN Term . ELSE Term  (6)
+
+	ELSE  shift 18
+	.  error
+
+
+state 18
+	Term : IF Term THEN Term ELSE . Term  (6)
 
 	IF  shift 3
 	TRUE  shift 4
@@ -166,48 +173,13 @@ state 16
 	.  error
 
 	Term  goto 19
-	AppTerm  goto 11
-	ATerm  goto 12
-
-
-state 17
-	ATerm : LPAREN Term RPAREN .  (7)
-
-	.  reduce 7
-
-
-state 18
-	toplevel : Command SEMI toplevel .  (2)
-
-	.  reduce 2
 
 
 state 19
-	Term : IF Term THEN Term . ELSE Term  (5)
+	Term : IF Term THEN Term ELSE Term .  (6)
 
-	ELSE  shift 20
-	.  error
-
-
-state 20
-	Term : IF Term THEN Term ELSE . Term  (5)
-
-	IF  shift 3
-	TRUE  shift 4
-	FALSE  shift 5
-	LPAREN  shift 6
-	.  error
-
-	Term  goto 21
-	AppTerm  goto 11
-	ATerm  goto 12
+	.  reduce 6
 
 
-state 21
-	Term : IF Term THEN Term ELSE Term .  (5)
-
-	.  reduce 5
-
-
-12 terminals, 7 nonterminals
-11 grammar rules, 22 states
+12 terminals, 5 nonterminals
+9 grammar rules, 20 states

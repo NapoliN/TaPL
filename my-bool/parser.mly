@@ -12,7 +12,6 @@
 %token LPAREN
 %token RPAREN
 %token SEMI
-
 %token EOF
 
 %start toplevel
@@ -25,16 +24,10 @@ toplevel :
         { $1 :: $3}
 
 Command :
-    Term    { (Eval($1))}
+    Term    { (Eval($1)) }
 
 Term :
-      AppTerm                         { $1 }
-    | IF Term THEN Term ELSE Term     {TmIf($2,$4,$6)}
-
-AppTerm :
-    ATerm   { $1 }
-
-ATerm :
-    LPAREN Term RPAREN  { $2 }
-    | TRUE              { TmTrue }
+      TRUE              { TmTrue }
     | FALSE             { TmFalse }
+    | IF Term THEN Term ELSE Term     {TmIf($2,$4,$6)}
+    | LPAREN Term RPAREN  { $2 }

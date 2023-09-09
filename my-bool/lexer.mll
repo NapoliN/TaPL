@@ -1,4 +1,3 @@
-(* Header *)
 {
 exception LexError
 
@@ -33,14 +32,15 @@ let create stream =
 let text = Lexing.lexeme
 }
 
+(* Rules *)
 rule main = parse
       [' ' '\t']+
-        {main lexbuf}    (* skip space *)
+        { main lexbuf }    (* skip space *)
     | [ '\n'] | eof
         { Parser.EOF }
     | ['a'-'z']+
-        { createID (text lexbuf) } (* reserved keyword *)
+        { createID (text lexbuf) } (* reserved keywords *)
 
     | ['(' ')' ';']
-        { createID (text lexbuf) } (* *)
+        { createID (text lexbuf) } (* reserved keywords*)
     
